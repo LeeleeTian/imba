@@ -8,7 +8,7 @@ from airflow.providers.dbt.cloud.operators.dbt import (
 
 with DAG(
     dag_id="dbt_cloud_provider_eltml",
-    default_args={"dbt_cloud_conn_id": "dbt_cloud", "account_id": 16173},
+    default_args={"dbt_cloud_conn_id": "dbt_cloud", "account_id": 96392},
     start_date=datetime(2021, 1, 1),
     schedule_interval=None,
     catchup=False,
@@ -19,7 +19,7 @@ with DAG(
 
     trigger_dbt_cloud_job_run = DbtCloudRunJobOperator(
         task_id="trigger_dbt_cloud_job_run",
-        job_id=65767,
+        job_id=118552,
         check_interval=10,
         timeout=300,
     )
