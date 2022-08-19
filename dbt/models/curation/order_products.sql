@@ -1,11 +1,15 @@
+{{ config(
+    materialized='table',
+) }}
+
 with order_products as (
     select * 
-    from {{ source("rawdata", "order_products__prior") }}
+    from {{ source("rawdata", "order_products_prior") }}
 
     union all
 
     select * 
-    from {{ source("rawdata", "order_products__train") }}
+    from {{ source("rawdata", "order_products_train") }}
 )
 
 select * 

@@ -4,8 +4,8 @@ sources:
   - name: rawdata
     schema: rawdata
     tables:
-      - name: order_products__prior
-      - name: order_products__train
+      - name: order_products_prior
+      - name: order_products_train
       - name: orders
       - name: products
 
