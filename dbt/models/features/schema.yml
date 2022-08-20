@@ -20,4 +20,22 @@ models:
       - name: user_id
         description: "The primary key for this table"
         tests:
+          - not_null
+
+  - name: up_features
+    columns:
+      - name: user_id
+        description: "The primary key for up_features"
+        tests:
+          - not_null
+      - name: product_id
+        description: "The primary key for this table"
+        tests:
           - not_null     
+  
+  - name: prd_features
+    columns:
+      - name: product_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
