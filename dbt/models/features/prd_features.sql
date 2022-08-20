@@ -5,7 +5,7 @@ with product_seq as (
     SELECT *, 
         Rank() OVER (partition BY user_id, product_id ORDER BY order_number) AS product_seq_time
     
-    from {{ ref("order_products_prior") }}
+    FROM {{ ref("order_products_prior") }}
 ),
 
 prd_features as (
@@ -22,4 +22,4 @@ prd_features as (
 
 )
 
-select * from prd_features
+SELECT * FROM prd_features
