@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: order_products_prior
+    schema: features
+    columns:
+      - name: order_id
+        description: "The primary key for order products"
+        tests:
+          - not_null

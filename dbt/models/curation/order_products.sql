@@ -1,6 +1,4 @@
-{{ config(
-    materialized='table',
-) }}
+{{ config(materialized='table', schema='curation') }}
 
 with order_products as (
     select * 
