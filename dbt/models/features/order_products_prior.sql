@@ -8,7 +8,7 @@ with order_products_prior as (
     from {{ source("rawdata", "orders") }} a
     join {{ ref("order_products") }} b
     on a.order_id = b.order_id
-    where a.eval_set = 'priro'
+    where a.eval_set = 'prior'
 )
 
 select * 

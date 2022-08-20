@@ -2,9 +2,22 @@ version: 2
 
 models:
   - name: order_products_prior
-    schema: features
     columns:
       - name: order_id
         description: "The primary key for order products"
         tests:
           - not_null
+
+  - name: user_features_1 
+    columns:
+      - name: user_id
+        description: "The primary key for this table"
+        tests:
+          - not_null   
+
+  - name: user_features_2
+    columns:
+      - name: user_id
+        description: "The primary key for this table"
+        tests:
+          - not_null     
