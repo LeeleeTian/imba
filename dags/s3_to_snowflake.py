@@ -7,12 +7,16 @@ from airflow.models.baseoperator import chain
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.snowflake.transfers.s3_to_snowflake import S3ToSnowflakeOperator
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
-from airflow.models import DAG, Variable
+from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
 from airflow.models import Variable
 
 
-# S3_CONN_ID = 'astro-s3-workshop'
-# BUCKET = 'astro-workshop-bucket'
+S3_CONN_ID = 'snowflake'
+S3_BUCKET = Variable.get('s3_bucket_data')
+AWS_KEY_ID = Variable.get('AWS_KEY_ID')
+AWS_SECRET_KEY = Variable.get('AWS_SECRET_KEY')
+DBT_CLOUD_CONN_ID = "dbt_cloud"
+DBT_JOB_ID = Variable.get('DBT_JOB_ID')
 
 # def upload_to_s3(endpoint, date):
 #     # Instanstiate
@@ -53,24 +57,24 @@ with DAG('data_s3_to_snowflake',
 
     create_source_tables = SnowflakeOperator(
         task_id='create_source_tables',
-        snowflake_conn_id='snowflake',
+        snowflake_conn_id=S3_CONN_ID,
         sql='create_snowflake_table.sql',
     ) 
 
     create_file_format = SnowflakeOperator(
         task_id='create_file_format',
-        snowflake_conn_id='snowflake',
+        snowflake_conn_id=S3_CONN_ID,
         sql='create_file_format.sql',
     )
 
     create_stage = SnowflakeOperator(
         task_id='create_stage',
-        snowflake_conn_id='snowflake',
+        snowflake_conn_id=S3_CONN_ID,
         sql='create_snowflake_stage.sql',
         params={
-            "s3_bucket": Variable.get('s3_bucket_data'),
-            "login": Variable.get('AWS_KEY_ID'),
-            "password": Variable.get('AWS_SECRET_KEY')
+            "s3_bucket": S3_BUCKET,
+            "login": AWS_KEY_ID,
+            "password": AWS_SECRET_KEY,
         },
     )
 
@@ -98,7 +102,7 @@ with DAG('data_s3_to_snowflake',
             schema='rawdata',
             file_format='csv_format',
             role='SYSADMIN',
-            snowflake_conn_id='snowflake',
+            snowflake_conn_id=S3_CONN_ID,
             )
         task_list_1.append(load_to_snowflake_1)    
 
@@ -112,9 +116,17 @@ with DAG('data_s3_to_snowflake',
             schema='rawdata',
             file_format='csv_format',
             role='SYSADMIN',
-            snowflake_conn_id='snowflake',
+            snowflake_conn_id=S3_CONN_ID,
             )
         task_list_2.append(load_to_snowflake_2) 
+
+    trigger_dbt_cloud_job_run = DbtCloudRunJobOperator(
+        task_id="trigger_dbt_cloud_job_run",
+        dbt_cloud_conn_id=DBT_CLOUD_CONN_ID,
+        job_id=DBT_JOB_ID,
+        check_interval=10,
+        timeout=300,
+    )
 
     # for endpoint in endpoints:
     #     # generate_files = PythonOperator(
@@ -151,5 +163,6 @@ with DAG('data_s3_to_snowflake',
         create_stage,
         *task_list_1,
         *task_list_2,
+        trigger_dbt_cloud_job_run,
         end,
     )
